@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using HisabKitab.Services;
+using HisabKitab.Services.Interface;
+using Microsoft.Extensions.Logging;
+using MudBlazor.Services;
 
 namespace HisabKitab
 {
@@ -15,13 +18,20 @@ namespace HisabKitab
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddMudServices();
 
 #if DEBUG
     		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
-#endif
+
+            builder.Services.AddScoped<IUserService, UserService>();
+
+            builder.Services.AddSingleton<DebtService>();
+            builder.Services.AddSingleton<TransactionService>();
+            builder.Services.AddSingleton<TagService>();
 
             return builder.Build();
+#endif
         }
     }
 }

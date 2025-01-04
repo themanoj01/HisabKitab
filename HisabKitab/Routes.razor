@@ -1,4 +1,11 @@
-﻿<Router AppAssembly="@typeof(MauiProgram).Assembly">
+﻿@code {
+    protected override void OnInitialized()
+    {
+        Nav.NavigateTo("/login"); // Redirects to the register page
+    }
+}
+
+<Router AppAssembly="@typeof(MauiProgram).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(Components.Layout.MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />

@@ -1,0 +1,235 @@
+﻿@page "/inflow"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inflow</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .nav-link {
+            font-size: 16px;
+            color: #333;
+        }
+
+            .nav-link.active {
+                color: #007bff;
+                font-weight: bold;
+            }
+
+        .form-control {
+            border-radius: 8px;
+        }
+
+        .btn-primary {
+            border-radius: 8px;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .custom-tag-input {
+            display: none;
+        }
+
+        .debt-fields {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <h3 class="mb-3">Transactions</h3>
+                <p class="text-muted">Add your transaction</p>
+
+                <!-- Add Inflow Form -->
+                <form class="row g-3 mb-5">
+                    <div class="col-md-6">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input type="number" class="form-control" id="amount" placeholder="Enter amount" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="type" class="form-label">Transaction type</label>
+                        <select class="form-select" id="type" onchange="toggleTransaction()">
+                            <option value="credit">Credit</option>
+                            <option value="debit">Debit</option>
+                            <option value="debt">Debt</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="tag" class="form-label">Tag</label>
+                        <select class="form-select" id="tag" onchange="toggleCustomTagInput()">
+                            <option value="Salary">Salary</option>
+                            <option value="Bonus">Bonus</option>
+                            <option value="Freelance">Freelance</option>
+                            <option value="Custom">Custom Tag</option>
+                        </select>
+                    </div>
+
+                    <!-- Debt Fields -->
+                    <div class="col-md-6 debt-fields">
+                        <label for="debt-source" class="form-label">Source of Debt</label>
+                        <input type="text" class="form-control" id="debt-source" placeholder="Enter source of debt">
+                    </div>
+                    <div class="col-md-6 debt-fields">
+                        <label for="due-date" class="form-label">Due Date</label>
+                        <input type="date" class="form-control" id="due-date">
+                    </div>
+                    <div class="col-md-6 debt-fields">
+                        <label for="debt-status" class="form-label">Debt Status</label>
+                        <select class="form-select" id="debt-status">
+                            <option value="Pending">Pending</option>
+                            <option value="Paid">Paid</option>
+                        </select>
+                    </div>
+
+                    <!-- Custom Tag Field -->
+                    <div class="col-md-6">
+                        <label for="custom-tag" class="form-label custom-tag-input">Custom Tag</label>
+                        <input type="text" class="form-control custom-tag-input" id="custom-tag" placeholder="Enter custom tag">
+                    </div>
+
+                    <div class="col-12">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" rows="3" placeholder="Add any relevant details"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary w-100">+ Add Transaction</button>
+                    </div>
+                </form>
+
+                <!-- Recent Transactions Table -->
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>15 Dec 2024</td>
+                                <td>Groceries</td>
+                                <td><span class="badge bg-danger">Debit</span></td>
+                                <td class="text-danger">-3000</td>
+                                <td>
+                                    <i class="bi bi-pencil-square text-primary"></i>
+                                    <i class="bi bi-trash text-danger"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>16 Dec 2024</td>
+                                <td>Salary Credit</td>
+                                <td><span class="badge bg-success">Credit</span></td>
+                                <td class="text-success">+50000</td>
+                                <td>
+                                    <i class="bi bi-pencil-square text-primary"></i>
+                                    <i class="bi bi-trash text-danger"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>18 Dec 2024</td>
+                                <td>Movie</td>
+                                <td><span class="badge bg-danger">Debit</span></td>
+                                <td class="text-danger">-2000</td>
+                                <td>
+                                    <i class="bi bi-pencil-square text-primary"></i>
+                                    <i class="bi bi-trash text-danger"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>19 Dec 2024</td>
+                                <td>Sold shares</td>
+                                <td><span class="badge bg-success">Credit</span></td>
+                                <td class="text-success">+15000</td>
+                                <td>
+                                    <i class="bi bi-pencil-square text-primary"></i>
+                                    <i class="bi bi-trash text-danger"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>19 Dec 2024</td>
+                                <td>Internet subscription</td>
+                                <td><span class="badge bg-danger">Debit</span></td>
+                                <td class="text-danger">-2000</td>
+                                <td>
+                                    <i class="bi bi-pencil-square text-primary"></i>
+                                    <i class="bi bi-trash text-danger"></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer -->
+                <footer>
+                    &copy; 2024 HisabKitab. All Rights Reserved.
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleCustomTagInput() {
+            const tagSelect = document.getElementById("tag");
+            const customTagInput = document.getElementById("custom-tag");
+            const customTagLabel = document.querySelector("label[for='custom-tag']");
+
+            if (tagSelect.value === "Custom") {
+                customTagInput.style.display = "block";
+                customTagLabel.style.display = "block";
+            } else {
+                customTagInput.style.display = "none";
+                customTagLabel.style.display = "none";
+            }
+        }
+
+        function toggleTransaction() {
+            const transactionType = document.getElementById("type").value;
+            const debtFields = document.querySelectorAll(".debt-fields");
+
+            if (transactionType === "debt") {
+                debtFields.forEach(field => {
+                    field.style.display = "block";
+                });
+            } else {
+                debtFields.forEach(field => {
+                    field.style.display = "none";
+                });
+            }
+
+            if (transactionType !== "debt") {
+                document.getElementById("debt-source").value = "";
+                document.getElementById("due-date").value = "";
+                document.getElementById("debt-status").value = "Pending";
+            }
+        }
+
+        toggleCustomTagInput();
+        toggleTransaction();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

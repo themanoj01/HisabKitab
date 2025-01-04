@@ -1,0 +1,50 @@
+﻿@page "/register"
+@using HisabKitab.Services
+@using HisabKitab.Model
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="css/registerlogin.css" />
+
+
+<div class="form-container">
+    <h3>Please register</h3>
+    <EditForm Model="@user" OnValidSubmit="HandleRegistration">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-group mb-3">
+            <label for="username" class="form-label">Username</label>
+            <InputText id="username" class="form-control" @bind-Value="user.Username" placeholder="Enter your username" />
+        </div>
+        <div class="form-group mb-3">
+            <label for="password" class="form-label">Password</label>
+            <InputText id="password" class="form-control" type="password" @bind-Value="user.Password" placeholder="Enter your password" />
+        </div>
+        <div class="form-group mb-3">
+            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <InputText id="confirmPassword" class="form-control" type="password" @bind-Value="user.ConfirmPassword" placeholder="Confirm your password" />
+        </div>
+        <div class="form-group mb-3">
+            <label for="currency" class="form-label">Preferred Currency</label>
+            <select class="form-select" @bind="user.Currency" id="currency">
+                <option selected disabled>Select Currency</option>
+                <option value="NPR">NPR</option>
+                <option value="Dollar">Dollar</option>
+                <option value="EUR">EUR</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Register</button>
+    </EditForm>
+    @if (!string.IsNullOrEmpty(errormessage))
+    {
+        <div class="alert alert-danger mt-3 text-center" role="alert">
+            @errormessage
+        </div>
+    }
+    <div class="mt-3 text-center">
+        <p>
+            Already have an account? <NavLink href="/login" class="text-primary">Login here</NavLink>
+        </p>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.js"></script>

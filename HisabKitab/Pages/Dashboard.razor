@@ -1,0 +1,93 @@
+﻿@page "/dashboard"
+@using MudBlazor
+
+<MudLayout>
+    <MudDrawer Open="true" Variant="DrawerVariant.Persistent">
+        <MudDrawerContent>
+            <MudNavMenu>
+                <MudNavLink Href="/dashboard" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+                <MudNavLink Href="/transactions" Icon="@Icons.Material.Filled.List">Transactions</MudNavLink>
+                <MudNavLink Href="/inflows" Icon="@Icons.Material.Filled.TrendingUp">Inflows</MudNavLink>
+                <MudNavLink Href="/debts" Icon="@Icons.Material.Filled.MoneyOff">Debts</MudNavLink>
+                <MudNavLink Href="/outflows" Icon="@Icons.Material.Filled.TrendingDown">Outflows</MudNavLink>
+            </MudNavMenu>
+        </MudDrawerContent>
+    </MudDrawer>
+
+    <MudMainContent>
+        <MudAppBar Color="Color.Primary" Elevation="4">
+            <MudText Typo="Typo.h6" Class="ml-2">HisabKitab</MudText>
+        </MudAppBar>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+            <MudGrid Spacing="3">
+                <MudItem xs="12" sm="6" md="3">
+                    <MudPaper Elevation="2" Class="pa-4">
+                        <MudText Typo="Typo.h6">Total Inflows</MudText>
+                        <MudText Typo="Typo.h4" Color="Color.Success">85,400</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudPaper Elevation="2" Class="pa-4">
+                        <MudText Typo="Typo.h6">Total Outflows</MudText>
+                        <MudText Typo="Typo.h4" Color="Color.Error">45,230</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudPaper Elevation="2" Class="pa-4">
+                        <MudText Typo="Typo.h6">Net Balance</MudText>
+                        <MudText Typo="Typo.h4" Color="Color.Info">40,170</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudPaper Elevation="2" Class="pa-4">
+                        <MudText Typo="Typo.h6">Pending Debts</MudText>
+                        <MudText Typo="Typo.h4" Color="Color.Warning">15,000</MudText>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+
+            <MudGrid Spacing="3" Class="mt-4">
+                <MudItem xs="12" md="6">
+                    <MudPaper Elevation="2" Class="pa-4">
+                        <MudText Typo="Typo.h6">Expense Distribution</MudText>
+                        <MudChart ChartType="ChartType.Pie" Data="@(new double[] { 35, 15, 20, 10, 7, 7, 6 })" Labels="@(new string[] { "Housing", "Savings", "Food", "Transportation", "Insurance", "Debt", "Entertainment" })" />
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudPaper Elevation="2" Class="pa-4">
+                        <MudText Typo="Typo.h6">Daily Expenses</MudText>
+                        <MudChart ChartType="ChartType.Line" Data="@(new double[] { 200, 400, 300, 700, 500, 600, 800 })" Labels="@(new string[] { "1", "7", "13", "19", "25", "31" })" />
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+
+            <MudGrid Spacing="3" Class="mt-4">
+                <MudItem xs="12">
+                    <MudPaper Elevation="2" Class="pa-4">
+                        <MudText Typo="Typo.h6">Recent Transactions</MudText>
+                        <MudTable Items="@(new[] {
+                            new { Date = "15 Dec 2024", Description = "Groceries", Type = "Debit", Amount = "-3000" },
+                            new { Date = "16 Dec 2024", Description = "Salary Credit", Type = "Credit", Amount = "+50000" },
+                            new { Date = "18 Dec 2024", Description = "Movie", Type = "Debit", Amount = "-2000" },
+                            new { Date = "19 Dec 2024", Description = "Sold shares", Type = "Credit", Amount = "+15000" },
+                            new { Date = "19 Dec 2024", Description = "Internet subscription", Type = "Debit", Amount = "-2000" }
+                        })">
+                            <HeaderContent>
+                                <MudTh>Date</MudTh>
+                                <MudTh>Description</MudTh>
+                                <MudTh>Type</MudTh>
+                                <MudTh>Amount</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Date">@context.Date</MudTd>
+                                <MudTd DataLabel="Description">@context.Description</MudTd>
+                                <MudTd DataLabel="Type">@context.Type</MudTd>
+                                <MudTd DataLabel="Amount">@context.Amount</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
