@@ -24,4 +24,5 @@ namespace HisabKitab.Abstraction
             File.WriteAllText(FilePath, json);
         }
     }
+
 }

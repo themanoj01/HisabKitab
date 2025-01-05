@@ -1,20 +1,22 @@
 ﻿using HisabKitab.Model;
 
-namespace HisabKitab.Abstraction
+namespace HisabKitab.Services.Interface
 {
     public interface ITransactionService
     {
-        Task AddTransactionAsync(Transactions transaction);
-        Task<List<Transactions>> GetTransactionsAsync();
-        Task<List<Transactions>> FilterTransactionsByTypeAsync(TransactionType type);
-        Task<List<Transactions>> SearchTransactionsAsync(string searchQuery, DateTime? startDate = null, DateTime? endDate = null);
-        Task<List<Transactions>> FilterTransactionsByTagAsync(string tag);
-        Task<List<Transactions>> FilterTransactionsByDefaultTagAsync(DefaultTags tag);
-        Task<List<Transactions>> SortTransactionsByDateAsync();
-        Task<decimal> GetTotalBalanceAsync();
-        Task<List<Transactions>> GetPendingDebtsAsync();
-        Task<decimal> GetTotalDebtAsync();
-        Task<decimal> GetTotalInflowAsync();
-        Task<decimal> GetTotalOutflowAsync();
+        void AddTransaction(Transactions transaction);
+        List<Transactions> GetAllTransactions();
+        // List<Transactions> GetTransactionsByType(string transactionType);
+       // List<Transactions> GetTransactionsByTag(string tag);
+        List<Transactions> GetTransactionsByDateRange(DateTime startDate, DateTime endDate);
+        decimal CalculateTotalInflow();
+        decimal CalculateTotalOutflow();
+        public decimal TotalBalance();
+        bool HasSufficientBalance(decimal amount);
+        public int GetTotalTransactionCount();
+        public decimal GetTotalTransactionAmount();
+       // List<Transactions> GetHighestOrLowestTransactions(string transactionType, int count);
     }
 }
+    
+

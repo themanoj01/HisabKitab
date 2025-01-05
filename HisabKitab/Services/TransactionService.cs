@@ -1,142 +1,154 @@
-﻿using HisabKitab.Abstraction;
+﻿using HisabKitab.Services.Interface;
+using HisabKitab.Abstraction;
 using HisabKitab.Model;
 using System.Text.Json;
+using System.Transactions;
 
 namespace HisabKitab.Services
 {
     public class TransactionService : TransactionBase, ITransactionService
     {
-        // Add a transaction (Credit, Debit, or Debt)
-        public async Task AddTransactionAsync(Transactions transaction)
+        private List<Transactions> transactions;
+        private List<Debts> debts;
+        private readonly UserService userService;
+        public TransactionService()
         {
-            var transactions = LoadTransactions();
+            var directory = Path.GetDirectoryName(FilePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            if (!File.Exists(FilePath))
+            {
+                File.WriteAllText(FilePath, "[]");
+            }
+            transactions = LoadTransactions();
+        }
+
+        public void AddTransaction(Transactions transaction)
+        {
             transactions.Add(transaction);
             SaveTransactions(transactions);
         }
 
-        // Get all transactions
-        public async Task<List<Transactions>> GetTransactionsAsync()
+        public decimal CalculateTotalInflow()
+        {
+            return transactions.Where(t => t.Type == TransactionType.Credit)
+                        .Sum(t => t.Amount);
+        }
+
+        public decimal CalculateTotalOutflow()
+        {
+            return transactions.Where(t => t.Type == TransactionType.Debit)
+                                   .Sum(t => t.Amount);
+        }
+
+        public decimal TotalBalance()
+        {
+            decimal totalInflow = CalculateTotalInflow();
+            decimal totalOutflow = CalculateTotalOutflow();
+            decimal balance = totalInflow - totalOutflow;
+
+
+            return balance;
+        }
+
+        public List<Transactions> GetAllTransactions()
         {
             return LoadTransactions();
         }
-
-        // Filter transactions by type (Credit, Debit, Debt)
-        public async Task<List<Transactions>> FilterTransactionsByTypeAsync(TransactionType type)
+        public List<Transactions> GetTransactionsByDateRange(DateTime startDate, DateTime endDate)
         {
-            var transactions = LoadTransactions();
-            return transactions.Where(t => t.Type == type).ToList();
+            return transactions.Where(t => t.Date >= startDate && t.Date <= endDate).ToList();
+        }
+        /*
+                public List<Transactions> GetHighestOrLowestTransactions(string transactionType, int count)
+                {
+                    throw new NotImplementedException();
+                }
+
+
+                public List<Transactions> GetTransactionsByTag(string tag)
+                {
+                    return transactions.Where(t => t.DefaultTags.Equals(tag, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+
+                public List<Transactions> GetTransactionsByType(string transactionType)
+                {
+                    throw new NotImplementedException();
+                }
+
+              */
+
+        public void UpdateTransaction(Guid transactionId, Transactions updatedTransaction)
+        {
+
+
+            var transaction = transactions.FirstOrDefault(t => t.TransactionId == transactionId);
+            if (transaction == null)
+            {
+                throw new Exception("Transaction not found with id " + transactionId);
+            }
+
+
+            // Update the transaction's properties
+            transaction.Type = updatedTransaction.Type;
+            transaction.Amount = updatedTransaction.Amount;
+            transaction.DefaultTags = updatedTransaction.DefaultTags;
+            transaction.Notes = updatedTransaction.Notes;
+
+            // Save the updated list of transactions
+            SaveTransactions(transactions);
         }
 
-        // Search transactions by title, amount, or date range
-        public async Task<List<Transactions>> SearchTransactionsAsync(string searchQuery, DateTime? startDate = null, DateTime? endDate = null)
+        public void DeleteTransaction(Guid transactionId)
         {
             var transactions = LoadTransactions();
 
-            // Apply search filter
-            var filteredTransactions = transactions.Where(t =>
-                (string.IsNullOrEmpty(searchQuery) || t.Notes.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)) &&
-                (!startDate.HasValue || t.Date >= startDate.Value) &&
-                (!endDate.HasValue || t.Date <= endDate.Value)
-            ).ToList();
+            // Find the transaction to delete
+            var transaction = transactions.FirstOrDefault(t => t.TransactionId == transactionId);
+            if (transaction == null)
+            {
+                throw new Exception("Transaction not found.");
+            }
 
-            return filteredTransactions;
+            transactions.Remove(transaction);
+
+            SaveTransactions(transactions);
         }
 
-        // Filter transactions by custom tags
-        public async Task<List<Transactions>> FilterTransactionsByTagAsync(string tag)
+        public bool HasSufficientBalance(decimal amount)
         {
-            var transactions = LoadTransactions();
-            return transactions.Where(t => t.CustomTag != null && t.CustomTag.TagName.Equals(tag, StringComparison.OrdinalIgnoreCase)).ToList();
+            
+            decimal currentBalance = TotalBalance();
+            return currentBalance >= amount;
         }
-
-        // Filter transactions by default tags (e.g., Food, Rent, etc.)
-        public async Task<List<Transactions>> FilterTransactionsByDefaultTagAsync(DefaultTags tag)
+        public List<Transactions> SortTransactionsByDate(List<Transactions> transactions)
         {
-            var transactions = LoadTransactions();
-            return transactions.Where(t => t.DefaultTags == tag).ToList();
-        }
-
-        // Sort transactions by date
-        public async Task<List<Transactions>> SortTransactionsByDateAsync()
-        {
-            var transactions = LoadTransactions();
             return transactions.OrderBy(t => t.Date).ToList();
         }
 
-        // Get the total balance (inflows - outflows)
-        public async Task<decimal> GetTotalBalanceAsync()
+        public List<Transactions> SearchTransactions(List<Transactions> transactions, string searchQuery)
         {
-            var transactions = LoadTransactions();
-            decimal totalInflow = transactions.Where(t => t.Type == TransactionType.Credit).Sum(t => t.Amount);
-            decimal totalOutflow = transactions.Where(t => t.Type == TransactionType.Debit).Sum(t => t.Amount);
-            return totalInflow - totalOutflow;
+            return transactions.Where(t => t.Notes.Contains(searchQuery)).ToList();
+        }
+        public int GetTotalTransactionCount()
+        {
+            return transactions.Count;
         }
 
-        // Get total debt (outstanding)
-        public async Task<decimal> GetTotalDebtAsync()
+        public decimal GetTotalTransactionAmount()
         {
-            var transactions = LoadTransactions();
+            return transactions.Sum(t => t.Amount);
+        }
+
+
+        public decimal GetTotalDebt()
+        {
             return transactions.Where(t => t.Type == TransactionType.Debt).Sum(t => t.Amount);
         }
 
-        // Get total cash inflows
-        public async Task<decimal> GetTotalInflowAsync()
-        {
-            var transactions = LoadTransactions();
-            return transactions.Where(t => t.Type == TransactionType.Credit).Sum(t => t.Amount);
-        }
 
-        // Get total cash outflows
-        public async Task<decimal> GetTotalOutflowAsync()
-        {
-            var transactions = LoadTransactions();
-            return transactions.Where(t => t.Type == TransactionType.Debit).Sum(t => t.Amount);
-        }
-
-        // Get pending debts (debts that have not been cleared yet)
-        public async Task<List<Transactions>> GetPendingDebtsAsync()
-        {
-            var transactions = LoadTransactions();
-            return transactions.Where(t => t.Type == TransactionType.Debt && t.Amount > 0).ToList();
-        }
-
-        // Save transactions to the file
-        private void SaveTransactions(List<Transactions> transactions)
-        {
-            var json = JsonSerializer.Serialize(transactions);
-            File.WriteAllText(FilePath, json);
-        }
-
-        // Check if user has sufficient balance before proceeding with a debit transaction
-        public async Task<bool> CanPerformDebitAsync(decimal amount)
-        {
-            var balance = await GetTotalBalanceAsync();
-            if (balance >= amount)
-            {
-                return true;
-            }
-            else
-            {
-                // Handle insufficient funds (notify the user)
-                return false;
-            }
-        }
-
-        // Cleared debts are subtracted from the total debt
-        public async Task<decimal> GetClearedDebtAsync()
-        {
-            var transactions = LoadTransactions();
-            decimal totalDebt = GetTotalDebtAsync().Result;
-            decimal totalPayments = transactions.Where(t => t.Type == TransactionType.Debt && t.Amount < 0).Sum(t => t.Amount);
-            return totalPayments > 0 ? totalPayments : 0;
-        }
-
-        // Get remaining debt (total debt - cleared debt)
-        public async Task<decimal> GetRemainingDebtAsync()
-        {
-            var totalDebt = await GetTotalDebtAsync();
-            var clearedDebt = await GetClearedDebtAsync();
-            return totalDebt - clearedDebt;
-        }
     }
 }

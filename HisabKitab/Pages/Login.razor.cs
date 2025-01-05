@@ -14,7 +14,7 @@ namespace HisabKitab.Pages
                 var Loggeduser = await UserService.LoginUserAsync(user.Username, user.Password);
                 if (Loggeduser != null)
                 {
-                    Nav.NavigateTo("/inflow");
+                    Nav.NavigateTo("/transaction");
                     Console.WriteLine("Login successfull!");
                 }
             }

@@ -1,93 +1,146 @@
 ﻿@page "/dashboard"
-@using MudBlazor
+@using HisabKitab.Model
+@inject ITransactionService TransactionService
+@inject IDebtService DebtService
 
-<MudLayout>
-    <MudDrawer Open="true" Variant="DrawerVariant.Persistent">
-        <MudDrawerContent>
-            <MudNavMenu>
-                <MudNavLink Href="/dashboard" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
-                <MudNavLink Href="/transactions" Icon="@Icons.Material.Filled.List">Transactions</MudNavLink>
-                <MudNavLink Href="/inflows" Icon="@Icons.Material.Filled.TrendingUp">Inflows</MudNavLink>
-                <MudNavLink Href="/debts" Icon="@Icons.Material.Filled.MoneyOff">Debts</MudNavLink>
-                <MudNavLink Href="/outflows" Icon="@Icons.Material.Filled.TrendingDown">Outflows</MudNavLink>
-            </MudNavMenu>
-        </MudDrawerContent>
-    </MudDrawer>
+<div class="container mt-4">
+    <!-- Top Section: Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-12 col-md-3 mb-3">
+            <div class="card text-center bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">Total Inflows</h6>
+                    <h4 class="card-text text-success">@TotalInflows</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3 mb-3">
+            <div class="card text-center bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">Total Outflows</h6>
+                    <h4 class="card-text text-danger">@TotalOutflows</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3 mb-3">
+            <div class="card text-center bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">Balance</h6>
+                    <h4 class="card-text text-primary">@Balance</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3 mb-3">
+            <div class="card text-center bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">Pending Debts</h6>
+                    <h4 class="card-text text-warning">@PendingDebts</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3 mb-3">
+            <div class="card text-center bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">Total Transaction</h6>
+                    <h4 class="card-text text-primary">@TotalTransaction</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3 mb-3">
+            <div class="card text-center bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">Total no of Transaction</h6>
+                    <h4 class="card-text text-primary">@NoOfTotalNoOfTransaction</h4>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <MudMainContent>
-        <MudAppBar Color="Color.Primary" Elevation="4">
-            <MudText Typo="Typo.h6" Class="ml-2">HisabKitab</MudText>
-        </MudAppBar>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
-            <MudGrid Spacing="3">
-                <MudItem xs="12" sm="6" md="3">
-                    <MudPaper Elevation="2" Class="pa-4">
-                        <MudText Typo="Typo.h6">Total Inflows</MudText>
-                        <MudText Typo="Typo.h4" Color="Color.Success">85,400</MudText>
-                    </MudPaper>
-                </MudItem>
-                <MudItem xs="12" sm="6" md="3">
-                    <MudPaper Elevation="2" Class="pa-4">
-                        <MudText Typo="Typo.h6">Total Outflows</MudText>
-                        <MudText Typo="Typo.h4" Color="Color.Error">45,230</MudText>
-                    </MudPaper>
-                </MudItem>
-                <MudItem xs="12" sm="6" md="3">
-                    <MudPaper Elevation="2" Class="pa-4">
-                        <MudText Typo="Typo.h6">Net Balance</MudText>
-                        <MudText Typo="Typo.h4" Color="Color.Info">40,170</MudText>
-                    </MudPaper>
-                </MudItem>
-                <MudItem xs="12" sm="6" md="3">
-                    <MudPaper Elevation="2" Class="pa-4">
-                        <MudText Typo="Typo.h6">Pending Debts</MudText>
-                        <MudText Typo="Typo.h4" Color="Color.Warning">15,000</MudText>
-                    </MudPaper>
-                </MudItem>
-            </MudGrid>
+    <!-- Middle Section: Recent Transactions -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Recent Transactions</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-bordered table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>S.N.</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (RecentTransactions != null && RecentTransactions.Any())
+                    {
+                        int serial = 1;
+                        @foreach (var transaction in RecentTransactions)
+                        {
+                            
+                     
+                            <tr>
+                                <td>@serial</td>
+                                <td>@transaction.Amount</td>
+                                <td>@transaction.Type</td>
+                                <td>@transaction.Date.ToShortDateString()</td>
+                                <td>@transaction.Notes</td>
+                            </tr>
+                            serial++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center">No recent transactions found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-            <MudGrid Spacing="3" Class="mt-4">
-                <MudItem xs="12" md="6">
-                    <MudPaper Elevation="2" Class="pa-4">
-                        <MudText Typo="Typo.h6">Expense Distribution</MudText>
-                        <MudChart ChartType="ChartType.Pie" Data="@(new double[] { 35, 15, 20, 10, 7, 7, 6 })" Labels="@(new string[] { "Housing", "Savings", "Food", "Transportation", "Insurance", "Debt", "Entertainment" })" />
-                    </MudPaper>
-                </MudItem>
-                <MudItem xs="12" md="6">
-                    <MudPaper Elevation="2" Class="pa-4">
-                        <MudText Typo="Typo.h6">Daily Expenses</MudText>
-                        <MudChart ChartType="ChartType.Line" Data="@(new double[] { 200, 400, 300, 700, 500, 600, 800 })" Labels="@(new string[] { "1", "7", "13", "19", "25", "31" })" />
-                    </MudPaper>
-                </MudItem>
-            </MudGrid>
+    <!-- Bottom Section: Pending Debts -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Pending Debts</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-bordered table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>S.N.</th>
+                        <th>Source</th>
+                        <th>Amount</th>
+                        <th>Due Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (PendingDebtList != null && PendingDebtList.Any())
+                    {
+                        int serial = 1; 
+                        @foreach (var debt in PendingDebtList)
+                        {
+                            <tr>
+                                <td>@serial</td>
+                                <td>@debt.Source</td>
+                                <td>@debt.Amount</td>
+                                <td>@debt.DueDate.ToShortDateString()</td>
+                            </tr>
+                            serial++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center">No pending debts found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-            <MudGrid Spacing="3" Class="mt-4">
-                <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4">
-                        <MudText Typo="Typo.h6">Recent Transactions</MudText>
-                        <MudTable Items="@(new[] {
-                            new { Date = "15 Dec 2024", Description = "Groceries", Type = "Debit", Amount = "-3000" },
-                            new { Date = "16 Dec 2024", Description = "Salary Credit", Type = "Credit", Amount = "+50000" },
-                            new { Date = "18 Dec 2024", Description = "Movie", Type = "Debit", Amount = "-2000" },
-                            new { Date = "19 Dec 2024", Description = "Sold shares", Type = "Credit", Amount = "+15000" },
-                            new { Date = "19 Dec 2024", Description = "Internet subscription", Type = "Debit", Amount = "-2000" }
-                        })">
-                            <HeaderContent>
-                                <MudTh>Date</MudTh>
-                                <MudTh>Description</MudTh>
-                                <MudTh>Type</MudTh>
-                                <MudTh>Amount</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd DataLabel="Date">@context.Date</MudTd>
-                                <MudTd DataLabel="Description">@context.Description</MudTd>
-                                <MudTd DataLabel="Type">@context.Type</MudTd>
-                                <MudTd DataLabel="Amount">@context.Amount</MudTd>
-                            </RowTemplate>
-                        </MudTable>
-                    </MudPaper>
-                </MudItem>
-            </MudGrid>
-        </MudContainer>
-    </MudMainContent>
-</MudLayout>
+

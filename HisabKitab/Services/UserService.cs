@@ -7,7 +7,7 @@ namespace HisabKitab.Services
 {
     public class UserService : UserBase,IUserService
     {
-
+        private Users users;
         public UserService()
         {
             // Ensure the directory exists
@@ -22,7 +22,8 @@ namespace HisabKitab.Services
             {
                 File.WriteAllText(FilePath, "[]");
             }
-        }
+
+        }       
 
         public async Task RegisterUserAsync(Users user)
         {
@@ -32,7 +33,7 @@ namespace HisabKitab.Services
                 throw new Exception("Username already exists.");
 
             users.Add(user);
-            await SaveUsersAsync(users);
+            await SaveUsersAsync();
         }
 
         public async Task<Users> LoginUserAsync(string username, string password)
@@ -56,7 +57,7 @@ namespace HisabKitab.Services
             return JsonSerializer.Deserialize<List<Users>>(jsonData) ?? new List<Users>();
         }
 
-        private async Task SaveUsersAsync(List<Users> users)
+        private async Task SaveUsersAsync()
         {
             var jsonData = JsonSerializer.Serialize(users, new JsonSerializerOptions { WriteIndented = true });
             await File.WriteAllTextAsync(FilePath, jsonData);

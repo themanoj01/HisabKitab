@@ -1,8 +1,7 @@
-﻿@page "/inflow"
+﻿@page "/transaction"
 @using HisabKitab.Model
 @using Microsoft.AspNetCore.Components.Forms
 @using System.ComponentModel.DataAnnotations
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -40,8 +39,8 @@
 </head>
 <body>
     <div class="container mt-4">
-        <h3 class="mb-3">Add Inflow</h3>
-        <p class="text-muted">Fill out the details below to add an inflow.</p>
+        <h3 class="mb-3">Add Transaction</h3>
+        <p class="text-muted">Fill out the details below to add a transaction.</p>
 
         <EditForm Model="@transaction" OnValidSubmit="HandleTransactionSubmit" class="row g-3">
             <DataAnnotationsValidator />
@@ -51,7 +50,18 @@
             <div class="col-md-6 form-floating">
                 <InputNumber class="form-control" id="amount" @bind-Value="transaction.Amount" required />
                 <label for="amount">Amount</label>
-            </div>        
+            </div>
+
+            <!-- Transaction Type -->
+            <div class="col-md-6 form-floating">
+                <InputSelect class="form-select" id="type" @bind-Value="transaction.Type" required>
+                    @foreach (var type in Enum.GetValues<TransactionType>())
+                    {
+                        <option value="@type">@type</option>
+                    }
+                </InputSelect>
+                <label for="type">Transaction Type</label>
+            </div>
 
             <!-- Default Tags -->
             <div class="col-md-6 form-floating">
@@ -72,18 +82,26 @@
             </div>
 
             <!-- Submit Button -->
-            <div class="col-12 d-flex justify-content-center">
-                <button type="submit" class="btn btn-primary w-50">+ Add Inflow</button>
+            <div class="col-12 d-flex justify-content-center mb-4">
+                <button type="submit" class="btn btn-primary w-50">+ Add Transaction</button>
             </div>
         </EditForm>
-        <div class="mt-5">
-            <h4>Inflow History</h4>
-            <table class="table table-hover table-bordered text-center align-middle">
+        <h3> Recent Transactions </h3>
+        <div class="filter-section">
+            <div class="d-flex justify-content-between mb-3">
+                <button class="btn btn-filter">Filter by Type</button>
+                <button class="btn btn-filter">Filter by Tags</button>
+                <button class="btn btn-filter">Filter by Date</button>
+                <button class="btn btn-primary">Search by Title</button>
+                <button class="btn btn-sort">Sort by Date</button>
+            </div>
+        </div>
+            <table class="table table-hover table-bordered text-center align-middle mt-4">
                 <thead class="table-dark">
                     <tr>
                         <th>S.N.</th>
                         <th>Amount</th>
-                        <th>Tag</th>
+                        <th>Type</th>
                         <th>Date</th>
                         <th>Notes</th>
                     </tr>
@@ -97,7 +115,7 @@
                             <tr>
                                 <td>@serial</td>
                                 <td>@txn.Amount</td>
-                                <td>@txn.DefaultTags</td>
+                                <td>@txn.Type</td>
                                 <td>@txn.Date.ToString("yyyy-MM-dd")</td>
                                 <td>@txn.Notes</td>
                             </tr>
@@ -107,12 +125,11 @@
                     else
                     {
                         <tr>
-                            <div class="alert alert-warning mt-4">No inflow found. Add your first inflow!</div>
+                            <td colspan="5">No transactions found.</td>
                         </tr>
                     }
                 </tbody>
             </table>
-        </div>
         <!-- Footer -->
         <footer>
             &copy; 2025 HisabKitab. All Rights Reserved.

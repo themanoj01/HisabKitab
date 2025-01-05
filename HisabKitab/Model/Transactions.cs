@@ -1,4 +1,6 @@
-﻿namespace HisabKitab.Model
+﻿using System.Text.Json.Serialization;
+
+namespace HisabKitab.Model
 {
     public enum TransactionType
     {
@@ -20,15 +22,18 @@
         EMI,
         Party
     }
+
     public class Transactions
     {
         public Guid TransactionId { get; set; } = Guid.NewGuid();
         public decimal Amount { get; set; }
-        public DateTime Date { get; set; }
-        public TransactionType Type { get; set; } 
+        public DateTime Date { get; set; } = DateTime.Now;
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public TransactionType Type { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public DefaultTags? DefaultTags { get; set; }
-        public Tags CustomTag { get; set; }
         public string Notes { get; set; }
     }
 }
