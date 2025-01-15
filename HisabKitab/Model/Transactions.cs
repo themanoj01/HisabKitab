@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace HisabKitab.Model
 {
@@ -26,6 +27,8 @@ namespace HisabKitab.Model
     public class Transactions
     {
         public Guid TransactionId { get; set; } = Guid.NewGuid();
+        [Required(ErrorMessage = "Amount is required")]
+        public string Title {  get; set; }
         public decimal Amount { get; set; }
         public DateTime Date { get; set; } = DateTime.Now;
 
@@ -34,6 +37,8 @@ namespace HisabKitab.Model
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public DefaultTags? DefaultTags { get; set; }
+
+        public string CustomTags {  get; set; }
         public string Notes { get; set; }
     }
 }

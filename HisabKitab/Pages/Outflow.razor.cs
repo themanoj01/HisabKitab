@@ -5,34 +5,37 @@ namespace HisabKitab.Pages
 {
     public partial class Outflow
     {
-        private TransactionService transactionService;
         private Transactions transaction = new Transactions();
         private List<Transactions> transactions = new List<Transactions>();
-        private string Error;
+        private string Message { get; set; } = string.Empty;
+        private bool IsSuccess { get; set; }
         private void HandleTransactionSubmit()
         {
-            if (!transactionService.HasSufficientBalance(transaction.Amount))
+            try
             {
-                Error = "Not enough balance to process this outflow.";
+                if (!TransactionService.HasSufficientBalance(transaction.Amount))
+                {
+                    Message = "Not enough balance to process this outflow.";
+                    IsSuccess = false;
+                }
+                else
+                {
+                    transaction.Type = TransactionType.Debit;
+                    Message = "Transaction done successfully!";
+                    IsSuccess = true;
+                    TransactionService.AddTransaction(transaction);
+                    transaction = new Transactions();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                transaction.Type = TransactionType.Debit;
-                TransactionService.AddTransaction(transaction);
-                Nav.NavigateTo("/outflow");
+                Message = "An exception encountered: " + ex.Message;
             }
         }
         protected override void OnInitialized()
         {
             transactions = TransactionService.GetAllTransactions().Where(txn => txn.Type == TransactionType.Debit)
-                .ToList(); ;
+                .ToList(); 
         }
-        /*private void GetAllTransactions()
-        {
-            transactions = TransactionService.GetAllTransactions()
-                 .Where(txn => txn.Type == TransactionType.Debit)
-                .ToList();
-        }*/
-
     }
 }

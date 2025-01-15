@@ -39,12 +39,11 @@ namespace HisabKitab.Services
         public List<Debts> GetAllDebts()
         {
             return debts;
-        }      
-
+        }     
         // Delete a debt by its ID
         public void DeleteDebt(Guid id)
         {
-            var debtToRemove = debts.FirstOrDefault(d => d.Id == id);
+            var debtToRemove = debts.FirstOrDefault(d => d.DebtId == id);
             if (debtToRemove != null)
             {
                 debts.Remove(debtToRemove);
@@ -56,7 +55,7 @@ namespace HisabKitab.Services
         // logic is not clear
         public void ClearDebt(Guid id)
         {
-            var debt = debts.FirstOrDefault(d => d.Id == id) ?? throw new ArgumentException("Debt not found");
+            var debt = debts.FirstOrDefault(d => d.DebtId == id) ?? throw new ArgumentException("Debt not found");
             decimal totalBalance = transactionService.TotalBalance();
             if (totalBalance < debt.AmountDue)
             {

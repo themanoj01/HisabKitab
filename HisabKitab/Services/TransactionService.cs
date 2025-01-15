@@ -62,24 +62,8 @@ namespace HisabKitab.Services
         {
             return transactions.Where(t => t.Date >= startDate && t.Date <= endDate).ToList();
         }
-        /*
-                public List<Transactions> GetHighestOrLowestTransactions(string transactionType, int count)
-                {
-                    throw new NotImplementedException();
-                }
-
-
-                public List<Transactions> GetTransactionsByTag(string tag)
-                {
-                    return transactions.Where(t => t.DefaultTags.Equals(tag, StringComparison.OrdinalIgnoreCase)).ToList();
-                }
-
-                public List<Transactions> GetTransactionsByType(string transactionType)
-                {
-                    throw new NotImplementedException();
-                }
-
-              */
+        
+                    
 
         public void UpdateTransaction(Guid transactionId, Transactions updatedTransaction)
         {
@@ -92,13 +76,11 @@ namespace HisabKitab.Services
             }
 
 
-            // Update the transaction's properties
             transaction.Type = updatedTransaction.Type;
             transaction.Amount = updatedTransaction.Amount;
             transaction.DefaultTags = updatedTransaction.DefaultTags;
             transaction.Notes = updatedTransaction.Notes;
 
-            // Save the updated list of transactions
             SaveTransactions(transactions);
         }
 
@@ -106,7 +88,6 @@ namespace HisabKitab.Services
         {
             var transactions = LoadTransactions();
 
-            // Find the transaction to delete
             var transaction = transactions.FirstOrDefault(t => t.TransactionId == transactionId);
             if (transaction == null)
             {

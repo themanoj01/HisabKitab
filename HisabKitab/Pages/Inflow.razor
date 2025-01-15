@@ -43,6 +43,13 @@
         <h3 class="mb-3">Add Inflow</h3>
         <p class="text-muted">Fill out the details below to add an inflow.</p>
 
+        @if (!string.IsNullOrEmpty(Message))
+        {
+            <div class="alert @(IsSuccess ? "alert-success" : "alert-danger")">
+                @Message
+            </div>
+        }
+
         <EditForm Model="@transaction" OnValidSubmit="HandleTransactionSubmit" class="row g-3">
             <DataAnnotationsValidator />
             <ValidationSummary />

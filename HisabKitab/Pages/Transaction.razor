@@ -1,102 +1,137 @@
 ﻿@page "/transaction"
 @using HisabKitab.Model
 @using Microsoft.AspNetCore.Components.Forms
-@using System.ComponentModel.DataAnnotations
+@inject NavigationManager NavigationManager
+<link rel="stylesheet" href="./css/Transaction.css" />
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transactions</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-        }
+<div class="container mt-4">
+    <!-- Introduction Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-6 fw-bold text-primary" style="font-size: 1.5rem;">Manage Your Finances with Ease</h1>
+        <p class="lead text-muted" style="font-size: 1rem;">Keep track of your transactions, filter by type or tag, and gain insights into your spending habits—all in one place HisabKitab.</p>
+    </div>
 
-        .form-control, .form-select {
-            border-radius: 8px;
-        }
+    <!-- Add Transaction Form -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="m-0">Add a New Transaction</h4>
+        </div>
+        <div class="card-body">
+            @if (!string.IsNullOrEmpty(Message))
+            {
+                <div class="alert @(IsSuccess ? "alert-success" : "alert-danger")">
+                    @Message
+                </div>
+            }
 
-        .btn-primary {
-            border-radius: 8px;
-        }
+            <EditForm Model="@transaction" OnValidSubmit="HandleTransactionSubmit" class="row g-3">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #888;
-        }
+                <div class="col-md-6 form-floating">
+                    <InputText class="form-control" id="title" @bind-Value="transaction.Title" required />
+                    <label for="title">Title</label>
+                </div>
 
-        .form-floating > label {
-            padding: 0.5rem 0.75rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="container mt-4">
-        <h3 class="mb-3">Add Transaction</h3>
-        <p class="text-muted">Fill out the details below to add a transaction.</p>
+                <div class="col-md-6 form-floating">
+                    <InputNumber class="form-control" id="amount" @bind-Value="transaction.Amount" required />
+                    <label for="amount">Amount</label>
+                </div>
 
-        <EditForm Model="@transaction" OnValidSubmit="HandleTransactionSubmit" class="row g-3">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+                <div class="col-md-6 form-floating">
+                    <InputSelect class="form-select" id="type" @bind-Value="transaction.Type" required>
+                        @foreach (var type in Enum.GetValues<TransactionType>())
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    </InputSelect>
+                    <label for="type">Transaction Type</label>
+                </div>
 
-            <!-- Amount -->
-            <div class="col-md-6 form-floating">
-                <InputNumber class="form-control" id="amount" @bind-Value="transaction.Amount" required />
-                <label for="amount">Amount</label>
-            </div>
+                <div class="col-md-6 form-floating">
+                    <InputSelect class="form-select" id="tag" @bind-Value="transaction.DefaultTags" required>
+                        <option value="">Select Tag</option>
+                        @foreach (var tag in Enum.GetValues<DefaultTags>())
+                        {
+                            <option value="@tag">@tag</option>
+                        }
+                    </InputSelect>
+                    <label for="tag">Default Tag</label>
+                </div>
 
-            <!-- Transaction Type -->
-            <div class="col-md-6 form-floating">
-                <InputSelect class="form-select" id="type" @bind-Value="transaction.Type" required>
-                    @foreach (var type in Enum.GetValues<TransactionType>())
-                    {
-                        <option value="@type">@type</option>
-                    }
-                </InputSelect>
-                <label for="type">Transaction Type</label>
-            </div>
+                <div class="col-12 form-floating">
+                       <InputText class="form-control" id="custom-tag" @bind-Value="transaction.CustomTags" required />
+                       <label for="custom-tag">Custom Tags</label>
+                </div>
 
-            <!-- Default Tags -->
-            <div class="col-md-6 form-floating">
-                <InputSelect class="form-select" id="tag" @bind-Value="transaction.DefaultTags" required>
-                    <option value="">Select Tag</option>
-                    @foreach (var tag in Enum.GetValues<DefaultTags>())
-                    {
-                        <option value="@tag">@tag</option>
-                    }
-                </InputSelect>
-                <label for="tag">Default Tag</label>
-            </div>
+                <div class="col-12 form-floating">
+                    <textarea class="form-control" id="notes" @bind="transaction.Notes" rows="3" placeholder="Add any relevant details"></textarea>
+                    <label for="notes">Notes</label>
+                </div>
 
-            <!-- Notes -->
-            <div class="col-12 form-floating">
-                <textarea class="form-control" id="notes" @bind="transaction.Notes" rows="3" placeholder="Add any relevant details"></textarea>
-                <label for="notes">Notes</label>
-            </div>
+                <div class="col-12 d-flex justify-content-center mb-4">
+                    <button type="submit" class="btn-add-transaction">Add Transaction</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
 
-            <!-- Submit Button -->
-            <div class="col-12 d-flex justify-content-center mb-4">
-                <button type="submit" class="btn btn-primary w-50">+ Add Transaction</button>
-            </div>
-        </EditForm>
-        <h3> Recent Transactions </h3>
-        <div class="filter-section">
-            <div class="d-flex justify-content-between mb-3">
-                <button class="btn btn-filter">Filter by Type</button>
-                <button class="btn btn-filter">Filter by Tags</button>
-                <button class="btn btn-filter">Filter by Date</button>
-                <button class="btn btn-primary">Search by Title</button>
-                <button class="btn btn-sort">Sort by Date</button>
+    <!-- Filter, Sort, and Search Section -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-secondary text-white">
+            <h4 class="m-0">Filter, Sort, and Search Transactions</h4>
+        </div>
+        <div class="card-body">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-3">
+                    <label for="filterType" class="form-label">Filter by Type:</label>
+                    <InputSelect class="form-select" id="filterType" @bind-Value="selectedType">
+                        <option value="">All Types</option>
+                        @foreach (var type in Enum.GetValues<TransactionType>())
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-md-3">
+                    <label for="filterTag" class="form-label">Filter by Tag:</label>
+                    <InputSelect class="form-select" id="filterTag" @bind-Value="selectedTag">
+                        <option value="">All Tags</option>
+                        @foreach (var tag in Enum.GetValues<DefaultTags>())
+                        {
+                            <option value="@tag">@tag</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-md-3">
+                    <label for="startDate" class="form-label">Start Date:</label>
+                    <InputDate class="form-control" id="startDate" @bind-Value="startDate" />
+                </div>
+                <div class="col-md-3">
+                    <label for="endDate" class="form-label">End Date:</label>
+                    <InputDate class="form-control" id="endDate" @bind-Value="endDate" />
+                </div>
+                <div class="col-md-6">
+                    <label for="searchQuery" class="form-label">Search by Title:</label>
+                    <InputText class="form-control" id="searchQuery" @bind-Value="searchQuery" placeholder="Search..." />
+                    <button class="btn btn-secondary me-2 mt-3" @onclick="SearchTransactions">Search</button>
+                </div>
+                <div class="col-md-6 d-flex justify-content-between">
+                    <button class="btn btn-secondary me-2" @onclick="ApplyFilters">Apply Filters</button>
+                    <button class="btn btn-outline-secondary" @onclick='() => SortByDate("asc")'>Sort Asc</button>
+                    <button class="btn btn-outline-secondary" @onclick='() => SortByDate("desc")'>Sort Desc</button>
+                </div>
             </div>
         </div>
-            <table class="table table-hover table-bordered text-center align-middle mt-4">
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white">
+            <h4 class="m-0">Recent Transactions</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover text-center align-middle">
                 <thead class="table-dark">
                     <tr>
                         <th>S.N.</th>
@@ -104,20 +139,25 @@
                         <th>Type</th>
                         <th>Date</th>
                         <th>Notes</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if (transactions != null && transactions.Any())
+                     @if (transactions != null && transactions.Any())
                     {
-                        int serial = 1;
-                        foreach (var txn in transactions)
+                        int serial = (currentPage - 1) * pageSize + 1;
+                        foreach (var transaction in pagedTransactions)
                         {
                             <tr>
                                 <td>@serial</td>
-                                <td>@txn.Amount</td>
-                                <td>@txn.Type</td>
-                                <td>@txn.Date.ToString("yyyy-MM-dd")</td>
-                                <td>@txn.Notes</td>
+                                <td>@transaction.Amount</td>
+                                <td>@transaction.Type</td>
+                                <td>@transaction.Date.ToString("yyyy-MM-dd")</td>
+                                <td>@transaction.Notes</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm me-2" @onclick="() => OpenEditModal(transaction)">Edit</button>
+                                    <button class="btn btn-danger btn-sm" @onclick="() => OpenDeleteModal(transaction)">Delete</button>
+                                </td>
                             </tr>
                             serial++;
                         }
@@ -125,17 +165,85 @@
                     else
                     {
                         <tr>
-                            <td colspan="5">No transactions found.</td>
+                            <td colspan="6">No transactions found.</td>
                         </tr>
                     }
                 </tbody>
             </table>
-        <!-- Footer -->
-        <footer>
-            &copy; 2025 HisabKitab. All Rights Reserved.
-        </footer>
+            <div class="pagination">
+                <button class="btn btn-primary" @onclick="PreviousPage" disabled="@IsPreviousDisabled">Previous</button>
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <button class="btn @(currentPage == i ? "btn-secondary" : "btn-light")" @onclick="() => ChangePage(i)">
+                        @i
+                    </button>
+                }
+                <button class="btn btn-primary" @onclick="NextPage" disabled="@IsNextDisabled">Next</button>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+</div>
 
+@if (isEditModalVisible)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Transaction</h5>
+                    <button type="button" class="btn-close" @onclick="CloseEditModal"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="@editTransaction" OnValidSubmit="HandleEditTransactionSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <InputText class="form-control" @bind-Value="editTransaction.Title" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Amount</label>
+                            <InputNumber class="form-control" @bind-Value="editTransaction.Amount" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Type</label>
+                            <InputSelect class="form-select" @bind-Value="editTransaction.Type">
+                                @foreach (var type in Enum.GetValues<TransactionType>())
+                                {
+                                    <option value="@type">@type</option>
+                                }
+                            </InputSelect>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <InputTextArea class="form-control" @bind-Value="editTransaction.Notes" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (isDeleteModalVisible)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Transaction</h5>
+                    <button type="button" class="btn-close" @onclick="CloseDeleteModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this transaction?</p>
+                    <p><strong>@transactionToDelete.Title</strong></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseDeleteModal">Cancel</button>
+                    <button class="btn btn-danger" @onclick="DeleteTransaction">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 

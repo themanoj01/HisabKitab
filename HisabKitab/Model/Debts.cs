@@ -10,7 +10,7 @@ namespace HisabKitab.Model
     }
     public class Debts
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid DebtId { get; set; } = Guid.NewGuid();
         public string Source { get; set; }
         public decimal Amount { get; set; }
         public DateTime TakenDate { get; set; } = DateTime.Now;

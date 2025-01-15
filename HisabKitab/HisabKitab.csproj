@@ -58,6 +58,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Content Remove="wwwroot\css\bootstrap\Navmenu.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\Images\Logo.jpeg" />
+    </ItemGroup>
+
+    <ItemGroup>
       <None Include="..\.editorconfig" Link=".editorconfig" />
     </ItemGroup>
 

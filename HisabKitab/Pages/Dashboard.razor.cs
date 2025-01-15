@@ -17,7 +17,6 @@ namespace HisabKitab.Pages
 
         protected override void OnInitialized()
         {
-            // Fetch data
             TotalInflows = TransactionService.CalculateTotalInflow();
             TotalOutflows = TransactionService.CalculateTotalOutflow();
             Balance = TotalInflows - TotalOutflows;
@@ -28,14 +27,12 @@ namespace HisabKitab.Pages
                 .Where(debt => debt.Status == DebtStatus.Pending)
                 .Sum(debt => debt.Amount);
 
-            // Fetch recent transactions
             var allTransactions = TransactionService.GetAllTransactions();
             RecentTransactions = allTransactions
                     .OrderByDescending(transaction => transaction.Amount)
                     .Take(5)
                     .ToList();
 
-            // Fetch pending debts
             PendingDebtList = DebtService.GetPendingDebts();
         }
     }

@@ -1,0 +1,80 @@
+﻿body {
+    background-color: #f4f7fc;
+    font-family: 'Roboto', sans-serif;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0;
+    padding: 15px;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+}
+
+.bg-gradient-secondary {
+    background: linear-gradient(45deg, #6c757d, #495057);
+}
+
+.bg-gradient-dark {
+    background: linear-gradient(45deg, #343a40, #212529);
+}
+
+.btn-add-transaction {
+    background: linear-gradient(90deg, #28a745, #218838);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(255, 117, 140, 0.4);
+    transition: all 0.3s ease;
+}
+
+    .btn-add-transaction:hover {
+        background: linear-gradient(90deg, #218838, #1e7e34);
+        box-shadow: 0 6px 12px rgba(255, 94, 108, 0.5);
+        transform: scale(1.05);
+    }
+
+.btn-add-transaction:active {
+        transform: scale(0.95);
+        box-shadow: 0 3px 6px rgba(255, 94, 108, 0.4);
+}
+
+.table {
+    margin-top: 15px;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
+
+.btn {
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    border: none;
+    color: white;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
