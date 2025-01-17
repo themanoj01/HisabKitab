@@ -50,19 +50,13 @@ namespace HisabKitab.Pages
                 debt = new Debts();
                 IsSuccess = true;
                 Message = "Debt added successfully!";
-                RefreshDebts();
+                Nav.Refresh();
             }
             catch (Exception ex)
             {
                 IsSuccess = false;
                 Message = "Error encountered: " + ex.Message;
             }
-        }
-
-        private void RefreshDebts()
-        {
-            debts = DebtService.GetAllDebts().ToList();
-            UpdatePagination();
         }
 
         private void ClearDebt(Guid id)
@@ -96,8 +90,8 @@ namespace HisabKitab.Pages
                     }
 
                     isEditModalVisible = false;
-                    RefreshDebts();
-                }
+                Nav.Refresh();
+            }
             
             catch (Exception ex)
             {
@@ -147,7 +141,7 @@ namespace HisabKitab.Pages
                     IsSuccess = true;
                 }
                 isDeleteModalVisible = false;
-                RefreshDebts();
+                Nav.Refresh();
             }
             catch (Exception ex)
             {

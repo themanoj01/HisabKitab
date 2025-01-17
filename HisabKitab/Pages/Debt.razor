@@ -5,13 +5,11 @@
 <link rel="stylesheet" href="./css/Transaction.css" />
 
 <div class="container mt-4">
-    <!-- Introduction Section -->
     <div class="text-center mb-5">
         <h1 class="display-6 fw-bold text-primary" style="font-size: 1.5rem;">Manage Your Debts with Ease</h1>
         <p class="lead text-muted" style="font-size: 1rem;">Keep track of your debts and stay updated.</p>
     </div>
 
-    <!-- Add Debt Form -->
     <div class="card shadow-sm mb-4 border-0">
         <div class="card-header bg-gradient-primary text-white">
             <h4 class="m-0">Add a New Debt</h4>
@@ -55,7 +53,6 @@
         </div>
     </div>
 
-    <!-- Debt History Table -->
     <div class="card shadow-sm mb-4 border-0">
         <div class="card-header bg-gradient-dark text-white">
             <h4 class="m-0">Debt History</h4>
@@ -118,7 +115,6 @@
                 </tbody>
             </table>
 
-            <!-- Pagination -->
             <div class="pagination">
                 <button class="btn btn-primary" @onclick="PreviousPage" disabled="@IsPreviousDisabled">Previous</button>
                 @for (int i = 1; i <= totalPages; i++)

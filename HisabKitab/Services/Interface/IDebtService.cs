@@ -16,7 +16,5 @@ namespace HisabKitab.Services.Interface
         public decimal GetClearedDebtAmount();
         public void DeleteDebt(Guid id);
         public void ClearDebt(Guid id);
-        public void ClearDebtFromInflow(decimal amount);
-
     }
 }

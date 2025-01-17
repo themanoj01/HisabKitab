@@ -33,7 +33,6 @@ namespace HisabKitab.Services
             if (debt.Amount <= 0)
                 throw new ArgumentException("Debt amount must be positive");
             debt.Status = DebtStatus.Pending;
-            debt.AmountDue = debt.Amount;
             debts.Add(debt);
             SaveDebts(debts);
         }
@@ -53,7 +52,7 @@ namespace HisabKitab.Services
                 .Sum(debt => debt.Amount);
         }
 
-       
+
         public void DeleteDebt(Guid id)
         {
             var debtToRemove = debts.FirstOrDefault(d => d.DebtId == id);
@@ -84,25 +83,6 @@ namespace HisabKitab.Services
         {
             return debts.Where(d => d.Status == DebtStatus.Pending).ToList();
         }
-
-        public void ClearDebtFromInflow(decimal amount)
-        {
-            var pendingDebts = GetPendingDebts(); 
-            foreach (var debt in pendingDebts)
-            {
-                if (amount >= debt.Amount)
-                {
-                    amount -= debt.Amount;
-                    debt.Status = DebtStatus.Cleared;  
-                }
-                else
-                {
-                    debt.Amount -= amount;
-                    break;
-                }
-            }
-        }
-        
-
+    
     }
 }

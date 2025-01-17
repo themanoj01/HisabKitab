@@ -26,7 +26,7 @@ namespace HisabKitab.Services
             transactions = LoadTransactions();
             balance = TotalBalance();
         }
-
+        //Add transaction method to save transactions
         public void AddTransaction(Transactions transaction)
         {
             transactions.Add(transaction);
@@ -51,7 +51,7 @@ namespace HisabKitab.Services
             return transactions.Where(t => t.Type == TransactionType.Debt)
                                    .Sum(t => t.Amount);
         }
-
+        // Total balance calculated to ensure sufficient balance in the account
         public decimal TotalBalance()
         {
             decimal totalInflow = CalculateTotalInflow();

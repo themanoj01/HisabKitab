@@ -6,8 +6,6 @@ namespace HisabKitab.Services.Interface
     {
         void AddTransaction(Transactions transaction);
         List<Transactions> GetAllTransactions();
-        // List<Transactions> GetTransactionsByType(string transactionType);
-       // List<Transactions> GetTransactionsByTag(string tag);
         List<Transactions> GetTransactionsByDateRange(DateTime startDate, DateTime endDate);
         decimal CalculateTotalInflow();
         decimal CalculateTotalOutflow();
@@ -21,8 +19,6 @@ namespace HisabKitab.Services.Interface
         public List<Transactions> GetTop5Lowest();
 
         public void UpdateTransaction(Guid transactionId, Transactions updatedTransaction);
-        // List<Transactions> GetHighestOrLowestTransactions(string transactionType, int count);
-
         public List<Transactions> GetTop5LowestDebt();
         public List<Transactions> GetTop5HighestDebt();
         public List<Transactions> GetTop5LowestOutflow();

@@ -98,7 +98,6 @@ namespace HisabKitab.Pages
                         Amount = transaction.Amount,                       
                         Source = transaction.Title,                         
                         DueDate = transaction.DueDate ?? DateTime.Now.AddDays(12),  
-                        AmountDue = transaction.Amount,                    
                         Status = DebtStatus.Pending,                  
                         Notes = transaction.Notes
                     };
