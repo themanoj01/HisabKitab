@@ -78,4 +78,12 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
+    <ItemGroup>
+      <MauiImage Include="wwwroot\logo.jpeg" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\img\" />
+    </ItemGroup>
+
 </Project>

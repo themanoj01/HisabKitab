@@ -1,4 +1,6 @@
 using HisabKitab.Model;
+using HisabKitab.Services;
+using MudBlazor;
 
 namespace HisabKitab.Pages
 {
@@ -6,34 +8,74 @@ namespace HisabKitab.Pages
     {
         private decimal TotalInflows { get; set; }
         private decimal TotalOutflows { get; set; }
-        private decimal Balance { get; set; }
-        private decimal PendingDebts { get; set; }
-        private List<Transactions> RecentTransactions { get; set; } = new();
-        private List<Debts> PendingDebtList { get; set; } = new();
-
-        private int NoOfTotalNoOfTransaction { get; set; }
-
         private decimal TotalTransaction { get; set; }
+        private decimal TotalDebt { get; set; }
+        private decimal ClearedDebt { get; set; }
+        private decimal RemainingDebt { get; set; }
+        private int NoOfTotalNoOfTransaction { get; set; }
+        private decimal TotalBalance {  get; set; }
+        private List<Debts> pendingDebts = new List<Debts>();
+        private DateTime StartDate { get; set; }
+        private DateTime EndDate { get; set; }
+
+
+        private List<Transactions> highestInflowTransactions;
+        private List<Transactions> lowestInflowTransactions;
+        private List<Transactions> highestOutflowTransactions;
+        private List<Transactions> lowestOutflowTransactions;
+        private List<Transactions> highestDebtTransactions;
+        private List<Transactions> lowestDebtTransactions;
+
+        private int Index = -1; 
+        int dataSize = 4;
+        double[] data;
+        string[] labels = { "Credit", "Debit", "Debt"};
+
+        private string[] Labels;
+        private double[] Values;
+
 
         protected override void OnInitialized()
         {
             TotalInflows = TransactionService.CalculateTotalInflow();
             TotalOutflows = TransactionService.CalculateTotalOutflow();
-            Balance = TotalInflows - TotalOutflows;
-            PendingDebtList = DebtService.GetPendingDebts();
             TotalTransaction = TransactionService.GetTotalTransactionAmount();
+            TotalDebt = DebtService.GetTotalDebtAmount();
+            ClearedDebt = DebtService.GetClearedDebtAmount();
+            RemainingDebt = TotalDebt - ClearedDebt;
             NoOfTotalNoOfTransaction = TransactionService.GetTotalTransactionCount();
-            PendingDebts = PendingDebtList
-                .Where(debt => debt.Status == DebtStatus.Pending)
-                .Sum(debt => debt.Amount);
+            TotalBalance = TransactionService.TotalBalance();
 
-            var allTransactions = TransactionService.GetAllTransactions();
-            RecentTransactions = allTransactions
-                    .OrderByDescending(transaction => transaction.Amount)
-                    .Take(5)
-                    .ToList();
+            data = new double[] { Convert.ToDouble(TotalInflows) , Convert.ToDouble(TotalOutflows), Convert.ToDouble(TotalDebt) };
 
-            PendingDebtList = DebtService.GetPendingDebts();
+            var lowestTransactions = TransactionService.GetTop5Lowest();
+            Labels = lowestTransactions.Select(t => string.IsNullOrEmpty(t.Title) ? "Unnamed" : t.Title).ToArray();
+            Values = lowestTransactions.Select(t => Convert.ToDouble(t.Amount)).ToArray();
+
+            highestInflowTransactions = TransactionService.GetTop5HighestInflow();
+            lowestInflowTransactions = TransactionService.GetTop5LowestInflow();
+            highestOutflowTransactions = TransactionService.GetTop5HighestOutflow();
+            lowestOutflowTransactions = TransactionService.GetTop5LowestOutflow();
+            highestDebtTransactions = TransactionService.GetTop5HighestDebt();
+            lowestDebtTransactions = TransactionService.GetTop5LowestDebt();
+            pendingDebts = DebtService.GetPendingDebts();
+
+
+            
         }
+        private void FilterByDateRange()
+        {
+            if (StartDate != default(DateTime) && EndDate != default(DateTime))
+            {
+                pendingDebts = DebtService.GetPendingDebts()
+                    .Where(d => d.DueDate >= StartDate && d.DueDate <= EndDate)
+                    .ToList();
+            }
+            else
+            {
+                DebtService.GetAllDebts();
+            }
+        }
+
     }
 }

@@ -3,6 +3,7 @@ using HisabKitab.Model;
 using Microsoft.AspNetCore.Components;
 using System.Linq;
 
+
 namespace HisabKitab.Pages
 {
     public partial class Transaction
@@ -36,6 +37,7 @@ namespace HisabKitab.Pages
     protected override void OnInitialized()
         {
             transactions = TransactionService.GetAllTransactions();
+            SortByDate("desc");
             UpdatePagination();
         }
 
@@ -88,10 +90,30 @@ namespace HisabKitab.Pages
                         return;
                     }
                 }
+
+                if (transaction.Type == TransactionType.Debt)
+                {
+                    var newDebt = new Debts
+                    {
+                        Amount = transaction.Amount,                       
+                        Source = transaction.Title,                         
+                        DueDate = transaction.DueDate ?? DateTime.Now.AddDays(12),  
+                        AmountDue = transaction.Amount,                    
+                        Status = DebtStatus.Pending,                  
+                        Notes = transaction.Notes
+                    };
+
+                    DebtService.AddDebt(newDebt);
+                    IsSuccess = true;
+                    Message = "Transaction done successfully!";
+                }
+
                 TransactionService.AddTransaction(transaction);
+                transaction = new Transactions();
                 IsSuccess = true;
                 Message = "Transaction done successfully!";
-                transaction = new Transactions();
+                Nav.Refresh();
+                
             }
             catch (Exception ex)
             {
@@ -150,8 +172,6 @@ namespace HisabKitab.Pages
 
             UpdatePagination();
         }
-
-
         private void SortByDate(string order)
         {
             if (order == "asc")
@@ -193,6 +213,7 @@ namespace HisabKitab.Pages
                 transactionToUpdate.Notes = editTransaction.Notes;
                 Message = "Transaction updated successfully!";
                 IsSuccess = true;
+                TransactionService.UpdateTransaction(editTransaction.TransactionId, transactionToUpdate);
             }
             isEditModalVisible = false;
         }

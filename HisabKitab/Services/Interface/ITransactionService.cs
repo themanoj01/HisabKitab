@@ -15,7 +15,20 @@ namespace HisabKitab.Services.Interface
         bool HasSufficientBalance(decimal amount);
         public int GetTotalTransactionCount();
         public decimal GetTotalTransactionAmount();
-       // List<Transactions> GetHighestOrLowestTransactions(string transactionType, int count);
+
+        public List<Transactions> GetTop5Highest();
+
+        public List<Transactions> GetTop5Lowest();
+
+        public void UpdateTransaction(Guid transactionId, Transactions updatedTransaction);
+        // List<Transactions> GetHighestOrLowestTransactions(string transactionType, int count);
+
+        public List<Transactions> GetTop5LowestDebt();
+        public List<Transactions> GetTop5HighestDebt();
+        public List<Transactions> GetTop5LowestOutflow();
+        public List<Transactions> GetTop5HighestOutflow();
+        public List<Transactions> GetTop5LowestInflow();
+        public List<Transactions> GetTop5HighestInflow();
     }
 }
     

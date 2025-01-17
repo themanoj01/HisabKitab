@@ -10,7 +10,7 @@ namespace HisabKitab.Services
     {
         private List<Transactions> transactions;
         private List<Debts> debts;
-        private readonly UserService userService;
+        private decimal balance;
         public TransactionService()
         {
             var directory = Path.GetDirectoryName(FilePath);
@@ -24,12 +24,14 @@ namespace HisabKitab.Services
                 File.WriteAllText(FilePath, "[]");
             }
             transactions = LoadTransactions();
+            balance = TotalBalance();
         }
 
         public void AddTransaction(Transactions transaction)
         {
             transactions.Add(transaction);
             SaveTransactions(transactions);
+
         }
 
         public decimal CalculateTotalInflow()
@@ -44,11 +46,18 @@ namespace HisabKitab.Services
                                    .Sum(t => t.Amount);
         }
 
+        public decimal CalculateTotalDebt()
+        {
+            return transactions.Where(t => t.Type == TransactionType.Debt)
+                                   .Sum(t => t.Amount);
+        }
+
         public decimal TotalBalance()
         {
             decimal totalInflow = CalculateTotalInflow();
             decimal totalOutflow = CalculateTotalOutflow();
-            decimal balance = totalInflow - totalOutflow;
+            decimal totalDebt = CalculateTotalDebt();
+            balance = (totalInflow + totalDebt) - totalOutflow;
 
 
             return balance;
@@ -58,6 +67,25 @@ namespace HisabKitab.Services
         {
             return LoadTransactions();
         }
+
+        public List<Transactions> GetTop5Highest()
+        {
+            List<Transactions> allTransactions = GetAllTransactions();
+            return allTransactions
+                    .OrderByDescending(transaction => transaction.Amount)
+                    .Take(5)
+                    .ToList();
+        }
+
+        public List<Transactions> GetTop5Lowest()
+        {
+            List<Transactions> allTransactions = GetAllTransactions();
+            return allTransactions
+                    .OrderBy(transaction => transaction.Amount)
+                    .Take(5)
+                    .ToList();
+        }
+
         public List<Transactions> GetTransactionsByDateRange(DateTime startDate, DateTime endDate)
         {
             return transactions.Where(t => t.Date >= startDate && t.Date <= endDate).ToList();
@@ -101,9 +129,19 @@ namespace HisabKitab.Services
 
         public bool HasSufficientBalance(decimal amount)
         {
-            
-            decimal currentBalance = TotalBalance();
-            return currentBalance >= amount;
+            return balance >= amount;
+        }
+        public decimal DeductFromBalance(decimal amount)
+        {
+            if (HasSufficientBalance(amount))
+            {
+                balance -= amount;
+                return balance;
+            }
+            else
+            {
+                throw new InvalidOperationException("Insufficient balance to deduct.");
+            }
         }
         public List<Transactions> SortTransactionsByDate(List<Transactions> transactions)
         {
@@ -130,6 +168,52 @@ namespace HisabKitab.Services
             return transactions.Where(t => t.Type == TransactionType.Debt).Sum(t => t.Amount);
         }
 
+        public List<Transactions> GetTop5HighestInflow()
+        {
+            return transactions.Where(t => t.Type == TransactionType.Credit)
+                               .OrderByDescending(t => t.Amount)
+                               .Take(5)
+                               .ToList();
+        }
 
+        public List<Transactions> GetTop5LowestInflow()
+        {
+            return transactions.Where(t => t.Type == TransactionType.Credit)
+                               .OrderBy(t => t.Amount)
+                               .Take(5)
+                               .ToList();
+        }
+
+        public List<Transactions> GetTop5HighestOutflow()
+        {
+            return transactions.Where(t => t.Type == TransactionType.Debit)
+                               .OrderByDescending(t => t.Amount)
+                               .Take(5)
+                               .ToList();
+        }
+
+        public List<Transactions> GetTop5LowestOutflow()
+        {
+            return transactions.Where(t => t.Type == TransactionType.Debit)
+                               .OrderBy(t => t.Amount)
+                               .Take(5)
+                               .ToList();
+        }
+
+        public List<Transactions> GetTop5HighestDebt()
+        {
+            return transactions.Where(t => t.Type == TransactionType.Debt)
+                               .OrderByDescending(t => t.Amount)
+                               .Take(5)
+                               .ToList();
+        }
+
+        public List<Transactions> GetTop5LowestDebt()
+        {
+            return transactions.Where(t => t.Type == TransactionType.Debt)
+                               .OrderBy(t => t.Amount)
+                               .Take(5)
+                               .ToList();
+        }
     }
 }

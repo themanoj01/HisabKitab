@@ -1,28 +1,23 @@
 using HisabKitab.Model;
+using HisabKitab.Services;
 
 namespace HisabKitab.Pages
 {
     public partial class Login
     {
-        private Users user = new Users();
-        private string loginErrorMessage = null;
+        private string? ErrorMessage;
 
-        private async Task HandleLogin()
+         Users user = new Users();
+
+        private void HandleLogin()
         {
-            try
+            if (UserService.Login(user))
             {
-                var Loggeduser = await UserService.LoginUserAsync(user.Username, user.Password);
-                if (Loggeduser != null)
-                {
-                    Nav.NavigateTo("/transaction");
-                    Console.WriteLine("Login successfull!");
-                }
+                Nav.NavigateTo("/dashboard");
             }
-            catch (Exception ex)
+            else
             {
-                loginErrorMessage = ex.Message;
-            }
-            {
+                ErrorMessage = "Invalid username or password";
             }
         }
     }

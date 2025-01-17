@@ -27,6 +27,7 @@ namespace HisabKitab
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<ITransactionService, TransactionService>();
             builder.Services.AddScoped<IDebtService, DebtService>();
+            builder.Services.AddScoped<ITagService, TagService>();
 
             return builder.Build();
 #endif

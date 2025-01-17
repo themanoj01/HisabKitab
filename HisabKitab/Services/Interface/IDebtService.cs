@@ -12,6 +12,8 @@ namespace HisabKitab.Services.Interface
         public void AddDebt(Debts debt);
         public List<Debts> GetAllDebts();
         public List<Debts> GetPendingDebts();
+        public decimal GetTotalDebtAmount();
+        public decimal GetClearedDebtAmount();
         public void DeleteDebt(Guid id);
         public void ClearDebt(Guid id);
         public void ClearDebtFromInflow(decimal amount);

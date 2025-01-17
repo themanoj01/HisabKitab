@@ -5,62 +5,34 @@ using System.Text.Json;
 
 namespace HisabKitab.Services
 {
-    public class UserService : UserBase,IUserService
+    public class UserService : UserBase, IUserService
     {
-        private Users users;
+        private List<Users> _users;
+        public const string SeedUsername = "Manoj";
+        public const string SeedPassword = "manoj123";
+        public const string SeedCurrency = "NPR";
         public UserService()
         {
-            // Ensure the directory exists
-            var directory = Path.GetDirectoryName(FilePath);
-            if (!Directory.Exists(directory))
+            _users = LoadUsers();
+            if (!_users.Any())
             {
-                Directory.CreateDirectory(directory);
+                _users.Add(new Users(SeedUsername, SeedPassword, SeedCurrency));
+                SaveUsers(_users);
             }
-
-            // Create the file if it doesn't exist
-            if (!File.Exists(FilePath))
+        }
+        public Users GetCurrentUser()
+        {
+            var users = LoadUsers();
+            return users.First();
+        }
+        public bool Login(Users user)
+        {
+            if (string.IsNullOrEmpty(user.Username) || string.IsNullOrEmpty(user.Password))
             {
-                File.WriteAllText(FilePath, "[]");
+                return false;
             }
-
-        }       
-
-        public async Task RegisterUserAsync(Users user)
-        {
-            var users = await LoadUsersAsync();
-
-            if (users.Any(u => u.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase)))
-                throw new Exception("Username already exists.");
-
-            users.Add(user);
-            await SaveUsersAsync();
+            return _users.Any(u => u.Username == user.Username && u.Password == user.Password);
         }
 
-        public async Task<Users> LoginUserAsync(string username, string password)
-        {
-            var users = await LoadUsersAsync();
-            var user = users.FirstOrDefault(u =>
-                    u.Username.Equals(username, StringComparison.OrdinalIgnoreCase) && u.Password == password);
-
-            return user == null ? throw new Exception("Invalid username or password.") : user;
-        }
-
-        public async Task<bool> IsUserRegisteredAsync(string username)
-        {
-            var users = await LoadUsersAsync();
-            return users.Any(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
-        }
-
-        private async Task<List<Users>> LoadUsersAsync()
-        {
-            var jsonData = await File.ReadAllTextAsync(FilePath);
-            return JsonSerializer.Deserialize<List<Users>>(jsonData) ?? new List<Users>();
-        }
-
-        private async Task SaveUsersAsync()
-        {
-            var jsonData = JsonSerializer.Serialize(users, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(FilePath, jsonData);
-        }
     }
 }

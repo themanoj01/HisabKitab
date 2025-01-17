@@ -10,7 +10,15 @@ namespace HisabKitab.Abstraction
         {
             if (!File.Exists(FilePath)) return new List<Users>();
             var json = File.ReadAllText(FilePath);
-            return JsonSerializer.Deserialize<List<Users>>(json) ?? new List<Users>();
+            try
+            {
+                return JsonSerializer.Deserialize<List<Users>>(json) ?? new List<Users>();
+            }
+            catch (JsonException ex)
+            {
+                Console.WriteLine($"Error deserializing JSON: {ex.Message}");
+                return new List<Users>();
+            }
         }
 
         protected void SaveUsers(List<Users> users)

@@ -70,6 +70,7 @@
                         <th>Due Date</th>
                         <th>Source</th>
                         <th>Notes</th>
+                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -79,14 +80,28 @@
                         int serial = (currentPage - 1) * pageSize + 1;
                         foreach (var debt in pagedDebts)
                         {
-                            <tr>
+                            var isDueTomorrow = debt.DueDate.Date == DateTime.Now.AddDays(1).Date;
+                            var isOverdue = debt.DueDate.Date < DateTime.Now.Date;
+                            var isCleared = debt.Status == DebtStatus.Cleared;
+
+                            var rowClass = isCleared
+                            ? "table-success"  
+                            : (debt.Status == DebtStatus.Pending
+                            ? (isDueTomorrow ? "table-danger" : isOverdue ? "table-danger" : "table-warning")
+                            : "table-warning");
+                            <tr class="@rowClass">
                                 <td>@serial</td>
                                 <td>@debt.Amount</td>
                                 <td>@debt.TakenDate.ToString("yyyy-MM-dd")</td>
                                 <td>@debt.DueDate.ToString("yyyy-MM-dd")</td>
                                 <td>@debt.Source</td>
                                 <td>@debt.Notes</td>
+                                <td>@debt.Status</td>
                                 <td>
+                                    @if (debt.Status == DebtStatus.Pending)
+                                    {
+                                        <button class="btn btn-success btn-sm me-2" @onclick="() => ClearDebt(debt.DebtId)">Clear Debt</button>
+                                    }
                                     <button class="btn btn-warning btn-sm me-2" @onclick="() => OpenEditModal(debt)">Edit</button>
                                     <button class="btn btn-danger btn-sm" @onclick="() => OpenDeleteModal(debt)">Delete</button>
                                 </td>

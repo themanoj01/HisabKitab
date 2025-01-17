@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace HisabKitab.Services.Interface
 {
-    public interface IUserService
+    public interface ITagService
     {
-        bool Login(Users user);
+        public void AddTag(Tags tag);
+        public List<Tags> GetAllTags();
+        public void RemoveTag(Guid id);
     }
 }

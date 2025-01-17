@@ -1,32 +1,59 @@
-﻿using HisabKitab.Model;
+﻿using HisabKitab.Abstraction;
+using HisabKitab.Model;
+using HisabKitab.Services.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace HisabKitab.Services
 {
-    public class TagService
+    public class TagService : TagBase, ITagService
     {
-        private readonly JsonStorageService<Tags> _storage;
-
+        private List<Tags> tags;
         public TagService()
         {
-            _storage = new JsonStorageService<Tags>("tags.json");
+            var directory = Path.GetDirectoryName(FilePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            if (!File.Exists(FilePath))
+            {
+                File.WriteAllText(FilePath, "[]");
+            }
+            tags = LoadTags();
         }
 
-        // Add a new tag
         public void AddTag(Tags tag)
         {
-            _storage.Add(tag);
+            if (tags.Any(t => t.TagName.Equals(tag.TagName, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new InvalidOperationException("A tag with the same name already exists.");
+            }
+
+            tags.Add(tag);
+            SaveTags(tags);
+
         }
 
-        // Get all tags
-        public List<Tags> GetTags()
+        public List<Tags> GetAllTags()
         {
-            return _storage.GetAll();
+            return LoadTags();
         }
 
-        // Delete a tag by its ID
-        public void DeleteTag(Guid id)
+        public void RemoveTag(Guid id)
         {
-            _storage.Delete(id, tag => tag.TagId);
+            var tagToRemove = tags.FirstOrDefault(t => t.TagId == id);
+            if (tagToRemove == null)
+            {
+                throw new KeyNotFoundException("Tag not found.");
+            }
+
+            tags.Remove(tagToRemove);
+            SaveTags(tags);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿@page "/transaction"
 @using HisabKitab.Model
 @using Microsoft.AspNetCore.Components.Forms
-@inject NavigationManager NavigationManager
 <link rel="stylesheet" href="./css/Transaction.css" />
 
 <div class="container mt-4">
@@ -49,7 +48,7 @@
                 </div>
 
                 <div class="col-md-6 form-floating">
-                    <InputSelect class="form-select" id="tag" @bind-Value="transaction.DefaultTags" required>
+                    <InputSelect class="form-select" id="tag" @bind-Value="transaction.DefaultTags" >
                         <option value="">Select Tag</option>
                         @foreach (var tag in Enum.GetValues<DefaultTags>())
                         {
@@ -59,15 +58,36 @@
                     <label for="tag">Default Tag</label>
                 </div>
 
-                <div class="col-12 form-floating">
-                       <InputText class="form-control" id="custom-tag" @bind-Value="transaction.CustomTags" required />
-                       <label for="custom-tag">Custom Tags</label>
+                <div class="col-md-6 form-floating">
+                    <InputSelect class="form-select" id="customTag" @bind-Value="transaction.CustomTag" >
+                        <option value="">Select Tag</option>
+                        @foreach (var tag in TagService.GetAllTags())
+                        {
+                            <option value="@tag.TagName">@tag.TagName</option>
+                        }
+                    </InputSelect>
+                    <label for="customTag">Custom Tag</label>
                 </div>
+
+        
 
                 <div class="col-12 form-floating">
                     <textarea class="form-control" id="notes" @bind="transaction.Notes" rows="3" placeholder="Add any relevant details"></textarea>
                     <label for="notes">Notes</label>
                 </div>
+
+                @if (transaction.Type == TransactionType.Debt)
+                {
+                    <div class="col-md-6 form-floating">
+                        <InputText class="form-control" id="source" @bind-Value="transaction.SourceOfDebt" required />
+                        <label for="source">Source of Debt</label>
+                    </div>
+
+                    <div class="col-md-6 form-floating">
+                        <InputDate class="form-control" id="dueDate" @bind-Value="transaction.DueDate" required />
+                        <label for="dueDate">Due Date</label>
+                    </div>
+                }
 
                 <div class="col-12 d-flex justify-content-center mb-4">
                     <button type="submit" class="btn-add-transaction">Add Transaction</button>
@@ -148,7 +168,13 @@
                         int serial = (currentPage - 1) * pageSize + 1;
                         foreach (var transaction in pagedTransactions)
                         {
-                            <tr>
+                            var rowClass = transaction.Type switch
+                            {
+                                TransactionType.Debit => "table-danger",
+                                TransactionType.Credit => "table-success",
+                                TransactionType.Debt => "table-warning"
+                            };
+                            <tr class="@rowClass">
                                 <td>@serial</td>
                                 <td>@transaction.Amount</td>
                                 <td>@transaction.Type</td>

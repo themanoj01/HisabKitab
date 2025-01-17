@@ -1,6 +1,8 @@
 ﻿using HisabKitab.Abstraction;
 using HisabKitab.Model;
 using HisabKitab.Services.Interface;
+using Microsoft.AspNetCore.Components;
+
 
 namespace HisabKitab.Services
 {
@@ -22,6 +24,7 @@ namespace HisabKitab.Services
                 File.WriteAllText(FilePath, "[]");
             }
             debts = LoadDebts();
+            transactionService = new TransactionService();
         }
 
         // Add a new debt
@@ -34,13 +37,23 @@ namespace HisabKitab.Services
             debts.Add(debt);
             SaveDebts(debts);
         }
-
         // Get all debts
         public List<Debts> GetAllDebts()
         {
             return debts;
-        }     
-        // Delete a debt by its ID
+        }
+        public decimal GetTotalDebtAmount()
+        {
+            return debts.Sum(debt => debt.Amount);
+        }
+
+        public decimal GetClearedDebtAmount()
+        {
+            return debts.Where(debt => debt.Status == DebtStatus.Cleared)
+                .Sum(debt => debt.Amount);
+        }
+
+       
         public void DeleteDebt(Guid id)
         {
             var debtToRemove = debts.FirstOrDefault(d => d.DebtId == id);
@@ -51,22 +64,20 @@ namespace HisabKitab.Services
             }
         }
 
-        // Clear debt (update the amount paid)
-        // logic is not clear
         public void ClearDebt(Guid id)
         {
             var debt = debts.FirstOrDefault(d => d.DebtId == id) ?? throw new ArgumentException("Debt not found");
-            decimal totalBalance = transactionService.TotalBalance();
-            if (totalBalance < debt.AmountDue)
+            if (debt == null)
             {
-                debt.AmountDue -= totalBalance;
-                throw new InvalidOperationException("Not enough balance to clear debt but partially paid from balance");
+                throw new InvalidOperationException("Debt not found.");
             }
 
-            if (debt.AmountDue == 0)
+            if (debt.Status != DebtStatus.Pending)
             {
-                debt.Status = DebtStatus.Cleared;
+                throw new InvalidOperationException("Debt is already cleared or does not exist.");
             }
+            transactionService.DeductFromBalance(debt.Amount);
+            debt.Status = DebtStatus.Cleared;
             SaveDebts(debts);
         }
         public List<Debts> GetPendingDebts()
