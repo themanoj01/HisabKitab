@@ -210,14 +210,19 @@ namespace HisabKitab.Pages
                 transactionToUpdate.Amount = editTransaction.Amount;
                 transactionToUpdate.Type = editTransaction.Type;
                 transactionToUpdate.Notes = editTransaction.Notes;
+                TransactionService.UpdateTransaction(editTransaction.TransactionId, transactionToUpdate);
                 Message = "Transaction updated successfully!";
                 IsSuccess = true;
-                TransactionService.UpdateTransaction(editTransaction.TransactionId, transactionToUpdate);
+            }
+        else
+            {
+                Message = "Transaction not found!";
+                IsSuccess = false;
             }
             isEditModalVisible = false;
+            Nav.Refresh();
         }
-
-        private void OpenDeleteModal(Transactions txn)
+    private void OpenDeleteModal(Transactions txn)
         {
             transactionToDelete = txn;
             isDeleteModalVisible = true;
@@ -233,11 +238,14 @@ namespace HisabKitab.Pages
             if (transactionToDelete != null)
             {
                 transactions.Remove(transactionToDelete);
+                TransactionService.DeleteTransaction(transactionToDelete.TransactionId);
                 Message = "Transaction deleted successfully!";
                 IsSuccess = true;
             }
             isDeleteModalVisible = false;
+            Nav.Refresh();
         }
+
 
     }
 }

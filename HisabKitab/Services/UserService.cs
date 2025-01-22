@@ -20,11 +20,11 @@ namespace HisabKitab.Services
                 SaveUsers(_users);
             }
         }
-        public Users GetCurrentUser()
+        /*public Users GetCurrentUser()
         {
             var users = LoadUsers();
             return users.First();
-        }
+        }*/
         public bool Login(Users user)
         {
             if (string.IsNullOrEmpty(user.Username) || string.IsNullOrEmpty(user.Password))

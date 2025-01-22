@@ -71,10 +71,10 @@ namespace HisabKitab.Services
                 throw new InvalidOperationException("Debt not found.");
             }
 
-            if (debt.Status != DebtStatus.Pending)
+            /*if (debt.Status != DebtStatus.Pending)
             {
                 throw new InvalidOperationException("Debt is already cleared or does not exist.");
-            }
+            }*/
             transactionService.DeductFromBalance(debt.Amount);
             debt.Status = DebtStatus.Cleared;
             SaveDebts(debts);

@@ -19,6 +19,8 @@ namespace HisabKitab.Services.Interface
         public List<Transactions> GetTop5Lowest();
 
         public void UpdateTransaction(Guid transactionId, Transactions updatedTransaction);
+
+        public void DeleteTransaction(Guid traansactionId);
         public List<Transactions> GetTop5LowestDebt();
         public List<Transactions> GetTop5HighestDebt();
         public List<Transactions> GetTop5LowestOutflow();
